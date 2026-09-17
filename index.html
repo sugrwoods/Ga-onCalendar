@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div class="sheet" id="sheet">
+    <div class="head">
+      <div class="ghost-num" id="ghostNum">08</div>
+      <div class="title-block">
+        <div class="eyebrow">Calendar · <span id="dayCount"></span></div>
+        <h1 class="month-name" id="monthName">August</h1>
+        <div class="year" id="yearLabel">2026</div>
+        <div class="countdown" id="countdownBadge"></div>
+      </div>
+      <div class="nav">
+        <button class="today-btn" id="profileToggle">👤 Me</button>
+        <button class="today-btn" id="notifToggle">🔕 Reminders</button>
+        <button class="today-btn" id="scheduleToggle">🗓 Schedule</button>
+        <button class="today-btn" id="todoToggle">☑ To-dos</button>
+        <button class="today-btn" id="printCalBtn">Print calendar</button>
+        <button class="today-btn" id="printScheduleBtn">Print schedule</button>
+        <button id="prevBtn" aria-label="Previous">‹</button>
+        <button class="today-btn" id="todayBtn">Today</button>
+        <button class="today-btn" id="viewToggleBtn">Week</button>
+        <button id="nextBtn" aria-label="Next">›</button>
+        <button class="today-btn" id="fontDecBtn">A-</button>
+        <button class="today-btn" id="fontIncBtn">A+</button>
+        <button class="today-btn" id="logoutBtn">Salir</button>
+      </div>
+    </div>
+
+    <div class="weekdays" id="weekdaysRow"></div>
+    <div class="grid" id="grid"></div>
+    <div id="calendarCategoryTotals"></div>
+
+    <div class="schedule-container" id="scheduleContainer" style="display:none;">
+      <div id="categoryTotals" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;"></div>
+      <div class="schedule-days-header" id="scheduleDaysHeader"></div>
+      <div class="schedule-body">
+        <div class="schedule-hours" id="scheduleHours"></div>
+        <div class="schedule-columns" id="scheduleColumns"></div>
+      </div>
+    </div>
+
+    <div class="todo-container" id="todoContainer" style="display:none;">
+      <div class="todo-add-row">
+        <input type="text" id="todoInput" placeholder="Add a task...">
+        <button id="addTodoBtn" class="btn-primary">+</button>
+      </div>
+      <div class="todo-progress-wrap" id="todoProgressWrap" style="display:none;">
+        <span class="todo-progress-label" id="todoProgressLabel">0 of 0</span>
+        <div class="todo-progress-track"><div class="todo-progress-fill" id="todoProgressFill" style="width:0%;"></div></div>
+      </div>
+      <div id="todoList"></div>
+    </div>
+
+    <div class="foot">
+      <div class="foot-label">Palette</div>
+      <div class="palettes" id="palettes"></div>
+      <div class="foot-hint">click a day to edit events · click ✎ to edit a palette</div>
+    </div>
+  </div>
+
+  <!-- Editor de eventos del día -->
+  <div class="overlay" id="overlay">
+    <div class="editor editor-wide">
+      <h3 id="editorTitle">Day</h3>
+      <div class="sub">Events for this day</div>
+
+      <div class="event-list" id="eventList"></div>
+
+      <div class="event-form">
+        <div class="form-row">
+          <input type="text" id="noteInput" placeholder="Event title...">
+        </div>
+        <div class="form-row">
+          <input type="time" id="eventHora">
+          <input type="text" id="scheduleCategory" placeholder="Category (optional)">
+        </div>
+        <div class="color-row" id="colorRow">
+          <button class="color-dot" data-color="accent2" title="Accent"></button>
+          <button class="color-dot" data-color="accent" title="Primary"></button>
+          <button class="color-dot" data-color="ok" title="Green"></button>
+          <button class="color-dot" data-color="warn" title="Red"></button>
+          <button class="color-dot" data-color="info" title="Blue"></button>
+        </div>
+        <div class="form-row">
+          <select id="eventRepeat">
+            <option value="none">Doesn't repeat</option>
+            <option value="weekly">Every week</option>
+            <option value="monthly">Every month</option>
+          </select>
+          <label class="checkbox-label"><input type="checkbox" id="eventImportant"> Important ⭐</label>
+        </div>
+      </div>
+
+      <div class="editor-actions">
+        <button class="btn-ghost" id="closeEditorBtn">Close</button>
+        <button class="btn-primary" id="saveNote">Add event</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editor de paletas (crear / editar / borrar) -->
+  <div class="overlay" id="paletteOverlay">
+    <div class="editor">
+      <h3 id="paletteEditorTitle">New palette</h3>
+      <div class="sub">4 colors, lightest to darkest</div>
+      <div class="color-inputs">
+        <label>Color 1 (background) <input type="color" id="colorC1" value="#EFEAD9"></label>
+        <label>Color 2 <input type="color" id="colorC2" value="#E6DFC9"></label>
+        <label>Color 3 <input type="color" id="colorC3" value="#A9862F"></label>
+        <label>Color 4 (dark) <input type="color" id="colorC4" value="#1F2A24"></label>
+      </div>
+      <div id="paletteCustomColorsSection"></div>
+      <div class="editor-actions">
+        <button class="btn-danger" id="deletePalette">Delete palette</button>
+        <button class="btn-ghost" id="cancelPalette">Cancel</button>
+        <button class="btn-primary" id="savePalette">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editor de bloques de horario (clases / trabajo) -->
+  <div class="overlay" id="scheduleOverlay">
+    <div class="editor editor-wide">
+      <h3 id="scheduleEditorTitle">Add class</h3>
+      <div class="sub">Weekly recurring block</div>
+
+      <div class="form-row">
+        <select id="scheduleDay" style="flex:1;">
+          <option value="0">Monday</option>
+          <option value="1">Tuesday</option>
+          <option value="2">Wednesday</option>
+          <option value="3">Thursday</option>
+          <option value="4">Friday</option>
+          <option value="5">Saturday</option>
+          <option value="6">Sunday</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input type="time" id="scheduleStart">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);">to</span>
+        <input type="time" id="scheduleEnd">
+      </div>
+      <div class="form-row">
+        <input type="text" id="scheduleTitle" placeholder="Subject / task...">
+      </div>
+      <div class="form-row">
+        <input type="text" id="scheduleSubtitle" placeholder="Professor / location (optional)">
+      </div>
+      <div class="color-row" id="scheduleColorRow">
+        <button class="color-dot" data-color="accent2" title="Accent"></button>
+        <button class="color-dot" data-color="accent" title="Primary"></button>
+        <button class="color-dot" data-color="ok" title="Green"></button>
+        <button class="color-dot" data-color="warn" title="Red"></button>
+        <button class="color-dot" data-color="info" title="Blue"></button>
+      </div>
+
+      <div class="editor-actions">
+        <button class="btn-danger" id="deleteScheduleBlock" style="display:none;">Delete</button>
+        <button class="btn-ghost" id="closeScheduleEditorBtn">Close</button>
+        <button class="btn-primary" id="saveScheduleBlock">Add class</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="profileOverlay">
+    <div class="editor">
+      <h3>Profiles</h3>
+      <div class="sub">Switch, rename, or add a profile</div>
+      <div id="profileList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+      <div class="form-row">
+        <input type="text" id="newProfileName" placeholder="New profile name...">
+        <button id="addProfileBtn" class="btn-primary" style="border-radius:20px;padding:9px 16px;">+</button>
+      </div>
+      <div class="editor-actions">
+        <button class="btn-ghost" id="closeProfileOverlayBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-sync.js"></script>
+  <!-- js/script.js se carga automáticamente desde supabase-sync.js, después de -->
+  <!-- iniciar sesión y sincronizar los datos del perfil activo. -->
+</body>
+
+</html>
