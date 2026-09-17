@@ -552,7 +552,7 @@
 
   function loadMainScript() {
     const s = document.createElement("script");
-    s.src = "js/script.js";
+    s.src = "script.js";
     document.body.appendChild(s);
   }
 
